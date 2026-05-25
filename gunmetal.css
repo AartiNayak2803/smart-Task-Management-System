@@ -1,0 +1,26 @@
+/* ═══════════════════════════════════════
+   SmartTask – Gunmetal Theme
+   Override variables for gunmetal palette
+   ═══════════════════════════════════════ */
+
+:root {
+  --bg:            #1a1f2e;
+  --bg2:           #1f2535;
+  --bg3:           #252d40;
+  --sidebar-bg:    #1a1f2e;
+  --card-bg:       #252d40;
+  --card-hover:    #2a3348;
+  --border:        #2f3a52;
+  --border2:       #3d4f6e;
+  --text:          #d8e0f0;
+  --text-secondary:#8a9ab8;
+  --text-muted:    #4a5570;
+  --accent-blue:   #5b8af0;
+  --accent-cyan:   #38bcd4;
+  --accent-green:  #3ecf8e;
+  --accent-purple: #9d7af5;
+  --accent-orange: #f0a832;
+  --accent-red:    #f25c5c;
+  --grad:          linear-gradient(135deg, #5b8af0 0%, #38bcd4 100%);
+  --shadow:        0 4px 24px rgba(0,0,0,0.5);
+}

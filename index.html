@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartTask – Smart Task Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<!-- To use Gunmetal theme, uncomment below line: -->
+<!-- <link rel="stylesheet" href="themes/gunmetal.css"> -->
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">Smart<span>Task</span></div>
+  </div>
+  <div class="user-card">
+    <div class="user-avatar">A</div>
+    <div class="user-info">
+      <div class="user-name">Arti Nayak</div>
+      <div class="user-role">B.VOC Student</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Main</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)"><span class="icon">⊞</span> Dashboard</div>
+    <div class="nav-item" onclick="showPage('tasks', this)"><span class="icon">✓</span> Task Manager <span class="nav-badge" id="task-badge">0</span></div>
+    <div class="nav-item" onclick="showPage('routine', this)"><span class="icon">✳</span> Daily Routine</div>
+    <div class="nav-item" onclick="showPage('mood', this)"><span class="icon">◎</span> Mood Tracker</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Productivity</div>
+    <div class="nav-item" onclick="showPage('habits', this)"><span class="icon">◉</span> Habits & Streaks</div>
+    <div class="nav-item" onclick="showPage('reminders', this)"><span class="icon">🔔</span> Reminders <span class="nav-badge orange">0</span></div>
+    <div class="nav-item" onclick="showPage('weekly', this)"><span class="icon">◫</span> Weekly Summary</div>
+    <div class="nav-item" onclick="showPage('analytics', this)"><span class="icon">⊹</span> Analytics</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">Account</div>
+    <div class="nav-item" onclick="showPage('profile', this)"><span class="icon">◐</span> My Profile</div>
+    <div class="nav-item" onclick="showPage('settings', this)"><span class="icon">◌</span> Settings</div>
+    <div class="nav-item" onclick="showPage('admin', this)"><span class="icon">◧</span> Admin Panel</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="page-title">Dashboard</div>
+    <div class="search-box">🔍 Search tasks, habits...</div>
+    <div class="topbar-actions">
+      <div class="topbar-btn">🔔</div>
+      <div class="topbar-btn" onclick="showPage('settings', document.querySelector('[onclick*=settings]'))" title="Settings">⚙</div>
+      <div class="user-topbar" onclick="showPage('profile', document.querySelector('[onclick*=profile]'))" title="My Profile" style="cursor:pointer" id="topbar-avatar">A</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="date-label">Data for <strong id="current-month">March 2026</strong></div>
+
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-label">Tasks Completed</div>
+          <div class="stat-value blue" id="dash-completed">0</div>
+          <div class="stat-change"><span class="up" id="dash-completed-pct">↑ 0%</span> vs last month</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Avg Mood Score</div>
+          <div class="stat-value orange" id="dash-mood">7.4</div>
+          <div class="stat-change"><span class="up">↑ 0.8</span> improvement</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Best Streak</div>
+          <div class="stat-value green" id="dash-best-streak">0 🔥</div>
+          <div class="stat-change" id="dash-best-streak-label">Days — set in Habits</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Productivity</div>
+          <div class="stat-value purple" id="dash-productivity">0%</div>
+          <div class="stat-change"><span class="down">↓ 3%</span> this week</div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📊 Task Completion</div>
+            <div class="card-badge">This Month</div>
+          </div>
+          <div class="bar-chart" id="dash-bar-chart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px;">
+            <div style="font-size:12px;color:var(--text-muted)">Mon – Sun averages</div>
+            <div style="font-size:12px;color:var(--accent-green)">✓ <span id="dash-total">0</span> total tasks done</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">😊 Mood Tracker</div>
+            <div class="card-badge green">Last 7 Days</div>
+          </div>
+          <div class="mood-week" id="dash-mood-week"></div>
+          <div class="mood-avg">Weekly avg mood: <span id="dash-mood-avg">7.4</span></div>
+          <div class="mood-bar-wrap"><div class="mood-bar-fill" style="width:74%"></div></div>
+        </div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔥 Habit Streaks</div>
+            <div class="card-badge green">Active</div>
+          </div>
+          <div class="streak-item">
+            <div style="font-size:18px">🏃</div>
+            <div class="streak-info">
+              <div class="streak-name">Exercise</div>
+              <div class="progress-bar"><div class="progress-fill blue" style="width:88%"></div></div>
+              <div class="streak-sub">88% this month · Best: 21d</div>
+            </div>
+            <div class="streak-badge">21d 🔥</div>
+          </div>
+          <div class="streak-item">
+            <div style="font-size:18px">📖</div>
+            <div class="streak-info">
+              <div class="streak-name">Reading</div>
+              <div class="progress-bar"><div class="progress-fill cyan" style="width:70%"></div></div>
+              <div class="streak-sub">70% this month · Best: 14d</div>
+            </div>
+            <div class="streak-badge">14d 🔥</div>
+          </div>
+          <div class="streak-item">
+            <div style="font-size:18px">💧</div>
+            <div class="streak-info">
+              <div class="streak-name">Water</div>
+              <div class="progress-bar"><div class="progress-fill orange" style="width:60%"></div></div>
+              <div class="streak-sub">60% this month · Best: 9d</div>
+            </div>
+            <div class="streak-badge">9d 🔥</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📅 Weekly Tasks</div>
+          </div>
+          <div id="dash-weekly-tasks">
+            <div class="empty-state" style="padding:20px">
+              <div class="empty-icon">📋</div>
+              <div class="empty-sub">No tasks yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TASK MANAGER ===== -->
+    <div class="page" id="page-tasks">
+      <div class="tm-header">
+        <div class="tm-tabs">
+          <button class="tab-btn active" onclick="filterTasks('all', this)">All</button>
+          <button class="tab-btn" onclick="filterTasks('pending', this)">Pending</button>
+          <button class="tab-btn" onclick="filterTasks('completed', this)">Completed</button>
+        </div>
+        <button class="add-task-btn" onclick="openModal()">+ Add Task</button>
+      </div>
+      <div class="task-list" id="task-list">
+        <div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <div class="empty-title">No tasks yet</div>
+          <div class="empty-sub">Click "+ Add Task" to create your first task</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DAILY ROUTINE ===== -->
+    <div class="page" id="page-routine">
+      <div class="routine-grid">
+        <div class="routine-card">
+          <div class="routine-time">6:00 AM</div>
+          <div class="routine-name">🌅 Morning Walk</div>
+          <div><span class="routine-status done">✓ Done</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">7:30 AM</div>
+          <div class="routine-name">📚 Study Time</div>
+          <div><span class="routine-status pending">⏳ Pending</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">9:00 AM</div>
+          <div class="routine-name">💻 College</div>
+          <div><span class="routine-status done">✓ Done</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">1:00 PM</div>
+          <div class="routine-name">🍽 Lunch Break</div>
+          <div><span class="routine-status done">✓ Done</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">3:00 PM</div>
+          <div class="routine-name">📝 Assignment Work</div>
+          <div><span class="routine-status pending">⏳ Pending</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">7:00 PM</div>
+          <div class="routine-name">🏃 Exercise</div>
+          <div><span class="routine-status done">✓ Done</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">9:00 PM</div>
+          <div class="routine-name">📖 Reading</div>
+          <div><span class="routine-status pending">⏳ Pending</span></div>
+        </div>
+        <div class="routine-card">
+          <div class="routine-time">10:30 PM</div>
+          <div class="routine-name">💤 Sleep</div>
+          <div><span class="routine-status pending">⏳ Pending</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MOOD TRACKER ===== -->
+    <div class="page" id="page-mood">
+      <div class="mood-grid-full" id="mood-grid-full"></div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Log Today's Mood</div></div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;width:100%">How are you feeling today?</div>
+          <div style="display:flex;gap:12px;font-size:28px">
+            <span style="cursor:pointer" onclick="logMood('😭',2)">😭</span>
+            <span style="cursor:pointer" onclick="logMood('😞',4)">😞</span>
+            <span style="cursor:pointer" onclick="logMood('😐',5)">😐</span>
+            <span style="cursor:pointer" onclick="logMood('🙂',7)">🙂</span>
+            <span style="cursor:pointer" onclick="logMood('😄',8)">😄</span>
+            <span style="cursor:pointer" onclick="logMood('🥳',10)">🥳</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== HABITS ===== -->
+    <div class="page" id="page-habits">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">🔥 Streak badge pe click karke apna actual streak set karo</div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <div class="habit-name">🏃 Exercise</div>
+          <div class="habit-streak-badge" id="streak-exercise" onclick="editStreak('exercise')" style="cursor:pointer"><span id="streak-val-exercise">0</span>d 🔥 ✏️</div>
+        </div>
+        <div class="habit-dots" id="habit-dots-exercise"></div>
+        <div class="habit-stats">
+          <div class="habit-stat"><strong>88%</strong> this month</div>
+          <div class="habit-stat">Best: <strong id="streak-best-exercise">0</strong>d</div>
+          <div class="habit-stat"><strong>27/31</strong> days done</div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <div class="habit-name">📖 Reading</div>
+          <div class="habit-streak-badge" id="streak-reading" onclick="editStreak('reading')" style="cursor:pointer"><span id="streak-val-reading">0</span>d 🔥 ✏️</div>
+        </div>
+        <div class="habit-dots" id="habit-dots-reading"></div>
+        <div class="habit-stats">
+          <div class="habit-stat"><strong>70%</strong> this month</div>
+          <div class="habit-stat">Best: <strong id="streak-best-reading">0</strong>d</div>
+          <div class="habit-stat"><strong>22/31</strong> days done</div>
+        </div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-header">
+          <div class="habit-name">💧 Water (8 glasses)</div>
+          <div class="habit-streak-badge" id="streak-water" onclick="editStreak('water')" style="cursor:pointer"><span id="streak-val-water">0</span>d 🔥 ✏️</div>
+        </div>
+        <div class="habit-dots" id="habit-dots-water"></div>
+        <div class="habit-stats">
+          <div class="habit-stat"><strong>60%</strong> this month</div>
+          <div class="habit-stat">Best: <strong id="streak-best-water">0</strong>d</div>
+          <div class="habit-stat"><strong>19/31</strong> days done</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REMINDERS ===== -->
+    <div class="page" id="page-reminders">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:13px;color:var(--text-secondary)">0 active reminders</div>
+        <button class="add-task-btn" onclick="alert('Reminder feature coming soon!')">+ Add Reminder</button>
+      </div>
+      <div class="reminder-card">
+        <div class="reminder-icon blue">📚</div>
+        <div class="reminder-info">
+          <div class="reminder-title">Study Session</div>
+          <div class="reminder-time">Every day · 7:30 AM</div>
+        </div>
+        <div class="reminder-toggle"></div>
+      </div>
+      <div class="reminder-card">
+        <div class="reminder-icon orange">🏃</div>
+        <div class="reminder-info">
+          <div class="reminder-title">Evening Exercise</div>
+          <div class="reminder-time">Mon, Wed, Fri · 7:00 PM</div>
+        </div>
+        <div class="reminder-toggle"></div>
+      </div>
+      <div class="reminder-card">
+        <div class="reminder-icon green">💧</div>
+        <div class="reminder-info">
+          <div class="reminder-title">Drink Water</div>
+          <div class="reminder-time">Every 2 hours</div>
+        </div>
+        <div class="reminder-toggle"></div>
+      </div>
+    </div>
+
+    <!-- ===== WEEKLY SUMMARY ===== -->
+    <div class="page" id="page-weekly">
+      <div class="week-summary-grid">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">📌 This Week's Tasks</div>
+          <div id="weekly-task-list">
+            <div class="empty-state" style="padding:16px">
+              <div class="empty-icon">📋</div>
+              <div class="empty-sub">No tasks this week</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">📊 Completion Rate</div>
+          <div style="text-align:center;padding:16px">
+            <div class="stat-value blue" id="weekly-rate">0%</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:8px">tasks completed this week</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">😊 Mood Average</div>
+          <div style="text-align:center;padding:16px">
+            <div class="stat-value orange">7.4</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:8px">avg mood score this week</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS ===== -->
+    <div class="page" id="page-analytics">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="date-label">Data for <strong id="analytics-month">March 2026</strong></div>
+        <div style="display:flex;gap:8px">
+          <button class="tab-btn">Week</button>
+          <button class="tab-btn active">Month</button>
+          <button class="tab-btn">Quarter</button>
+        </div>
+      </div>
+      <div class="analytics-stats">
+        <div class="stat-card blue">
+          <div class="stat-label">Tasks Completed</div>
+          <div class="stat-value blue" id="analytics-completed">0</div>
+          <div class="stat-change"><span class="up">↑ 18%</span> vs last month</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Avg Mood Score</div>
+          <div class="stat-value orange">7.4</div>
+          <div class="stat-change"><span class="up">↑ 0.8</span> improvement</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Best Streak</div>
+          <div class="stat-value green">21 🔥</div>
+          <div class="stat-change">Days — Exercise habit</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Productivity</div>
+          <div class="stat-value purple" id="analytics-productivity">0%</div>
+          <div class="stat-change"><span class="down">↓ 3%</span> this week</div>
+        </div>
+      </div>
+      <div class="analytics-charts">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📊 Task Completion Trend</div></div>
+          <div class="bar-chart" id="analytics-bar" style="height:120px"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🎯 Task Categories</div></div>
+          <div class="donut-wrap">
+            <svg class="donut" width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#1e2d45" stroke-width="18"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#3b82f6" stroke-width="18" stroke-dasharray="113 170" stroke-dashoffset="0"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#10b981" stroke-width="18" stroke-dasharray="57 226" stroke-dashoffset="-113"/>
+              <circle cx="60" cy="60" r="45" fill="none" stroke="#f59e0b" stroke-width="18" stroke-dasharray="28 255" stroke-dashoffset="-170"/>
+            </svg>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Work (40%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Personal (33%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Study (27%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MY PROFILE ===== -->
+    <div class="page" id="page-profile">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar-letter">A</div>
+        <div style="flex:1">
+          <div id="profile-view-mode">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div class="profile-name" id="profile-name-display">Arti Nayak</div>
+              <button class="tab-btn" onclick="toggleProfileEdit()" style="font-size:11px;padding:4px 10px">✏️ Edit</button>
+            </div>
+            <div class="profile-role" id="profile-role-display">B.VOC Student · Ahmedabad</div>
+          </div>
+          <div id="profile-edit-mode" style="display:none;margin-top:4px">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+              <div style="flex:1;min-width:140px">
+                <div class="form-label">Name</div>
+                <input class="form-input" id="profile-name-input" placeholder="Your name" style="font-size:13px;padding:7px 10px"/>
+              </div>
+              <div style="flex:1;min-width:140px">
+                <div class="form-label">Role / Title</div>
+                <input class="form-input" id="profile-role-input" placeholder="e.g. B.VOC Student" style="font-size:13px;padding:7px 10px"/>
+              </div>
+            </div>
+            <div style="margin-bottom:8px">
+              <div class="form-label">Location</div>
+              <input class="form-input" id="profile-location-input" placeholder="e.g. Ahmedabad" style="font-size:13px;padding:7px 10px;max-width:240px"/>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-cancel" style="padding:6px 14px;font-size:12px" onclick="cancelProfileEdit()">Cancel</button>
+              <button class="btn-save" style="padding:6px 14px;font-size:12px" onclick="saveProfile()">Save</button>
+            </div>
+          </div>
+          <div class="profile-stats" style="margin-top:12px">
+            <div>
+              <div class="profile-stat-num" id="profile-tasks">0</div>
+              <div class="profile-stat-label">Tasks Done</div>
+            </div>
+            <div>
+              <div class="profile-stat-num" id="profile-streak">0</div>
+              <div class="profile-stat-label">Day Streak</div>
+            </div>
+            <div>
+              <div class="profile-stat-num">7.4</div>
+              <div class="profile-stat-label">Avg Mood</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">About Me</div>
+          <button class="tab-btn" id="about-edit-btn" onclick="toggleAboutEdit()" style="font-size:12px;padding:5px 12px">✏️ Edit</button>
+        </div>
+        <div id="about-text" style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-top:8px"></div>
+        <textarea id="about-textarea" class="form-input" rows="3" style="display:none;resize:vertical;margin-top:8px"></textarea>
+        <div id="about-save-row" style="display:none;gap:8px;margin-top:10px">
+          <button class="btn-cancel" style="padding:7px 16px;font-size:12px" onclick="cancelAboutEdit()">Cancel</button>
+          <button class="btn-save" style="padding:7px 16px;font-size:12px" onclick="saveAbout()">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="page" id="page-settings">
+      <div class="settings-group">
+        <div class="settings-group-title">Appearance</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Dark Mode</div><div class="settings-row-sub">Gunmetal dark theme</div></div>
+          <div class="toggle" id="toggle-darkmode" onclick="toggleSetting('darkmode')" style="cursor:pointer"></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Compact View</div><div class="settings-row-sub">Reduce spacing</div></div>
+          <div class="toggle off" id="toggle-compact" onclick="toggleSetting('compact')" style="cursor:pointer"></div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Notifications</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Task Reminders</div><div class="settings-row-sub">Get notified before due time</div></div>
+          <div class="toggle" id="toggle-reminders" onclick="toggleSetting('reminders')" style="cursor:pointer"></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Streak Alerts</div><div class="settings-row-sub">Don't break your streak</div></div>
+          <div class="toggle" id="toggle-streak" onclick="toggleSetting('streak')" style="cursor:pointer"></div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Daily Summary</div><div class="settings-row-sub">End of day report</div></div>
+          <div class="toggle off" id="toggle-summary" onclick="toggleSetting('summary')" style="cursor:pointer"></div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Data</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Export Data</div><div class="settings-row-sub">Download your tasks as CSV</div></div>
+          <button class="tab-btn" onclick="exportTasks()">Export</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Clear All Tasks</div><div class="settings-row-sub">This cannot be undone</div></div>
+          <button class="tab-btn" style="color:var(--accent-red);border-color:var(--accent-red)" onclick="clearAllTasks()">Clear</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="settings-group-title">Account</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Reset All Data</div><div class="settings-row-sub">Clear profile, tasks, streaks — fresh start</div></div>
+          <button class="tab-btn" style="color:var(--accent-orange);border-color:var(--accent-orange)" onclick="resetAllData()">Reset</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label" style="color:var(--accent-red)">Log Out</div><div class="settings-row-sub">Clear session and return to login</div></div>
+          <button class="tab-btn" style="color:var(--accent-red);border-color:var(--accent-red)" onclick="logOut()">🚪 Log Out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN PANEL ===== -->
+    <div class="page" id="page-admin">
+
+      <!-- Admin Sub-Nav Tabs -->
+      <div class="admin-tabs-wrap">
+        <div class="admin-tabs">
+          <button class="admin-tab active" onclick="showAdminSection('adm-dashboard',this)">📊 Dashboard</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-users',this)">👤 Users</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-tasks',this)">📋 Tasks</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-projects',this)">📁 Projects</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-roles',this)">🔐 Roles</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-notify',this)">📢 Messages</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-settings',this)">⚙️ Settings</button>
+          <button class="admin-tab" onclick="showAdminSection('adm-reports',this)">📈 Reports</button>
+        </div>
+      </div>
+
+      <!-- ── 1. DASHBOARD ── -->
+      <div class="admin-section active" id="adm-dashboard">
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat-card blue">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value blue" id="adm-total-users">1</div>
+            <div class="stat-change"><span class="up">↑ Active</span></div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Total Tasks</div>
+            <div class="stat-value green" id="adm-total-tasks">0</div>
+            <div class="stat-change"><span id="adm-done-count">0</span> completed</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-label">Active Users</div>
+            <div class="stat-value orange" id="adm-active-users">1</div>
+            <div class="stat-change">Currently online</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">Productivity</div>
+            <div class="stat-value purple" id="adm-productivity">0%</div>
+            <div class="stat-change">Task completion rate</div>
+          </div>
+        </div>
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📊 Task Overview</div></div>
+            <div id="adm-bar-chart" class="bar-chart"></div>
+            <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">
+              <span style="font-size:11px;color:var(--accent-blue)">● Pending: <span id="adm-pending-cnt">0</span></span>
+              <span style="font-size:11px;color:var(--accent-green)">● Done: <span id="adm-done-cnt2">0</span></span>
+              <span style="font-size:11px;color:var(--accent-red)">● High Priority: <span id="adm-high-cnt">0</span></span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🧩 System Info</div></div>
+            <div class="adm-info-row"><span class="adm-info-label">Version</span><span class="adm-badge blue">v2.0.0</span></div>
+            <div class="adm-info-row"><span class="adm-info-label">Storage</span><span>localStorage</span></div>
+            <div class="adm-info-row"><span class="adm-info-label">Admin User</span><span id="adm-sys-user">—</span></div>
+            <div class="adm-info-row"><span class="adm-info-label">Plan</span><span class="adm-badge green">Free</span></div>
+            <div class="adm-info-row"><span class="adm-info-label">Theme</span><span id="adm-sys-theme">Dark</span></div>
+            <div class="adm-info-row"><span class="adm-info-label">Habits Active</span><span>3</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">⚡ Quick Actions</div></div>
+          <div class="adm-quick-actions">
+            <button class="adm-action-btn blue" onclick="showAdminSection('adm-users', document.querySelectorAll('.admin-tab')[1])">👤 Manage Users</button>
+            <button class="adm-action-btn green" onclick="showAdminSection('adm-tasks', document.querySelectorAll('.admin-tab')[2])">📋 View All Tasks</button>
+            <button class="adm-action-btn orange" onclick="showAdminSection('adm-notify', document.querySelectorAll('.admin-tab')[5])">📢 Send Message</button>
+            <button class="adm-action-btn purple" onclick="showAdminSection('adm-reports', document.querySelectorAll('.admin-tab')[7])">📈 View Reports</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 2. USER MANAGEMENT ── -->
+      <div class="admin-section" id="adm-users">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">👤 User Management</div>
+            <button class="adm-btn-primary" onclick="openAddUserModal()">+ Add User</button>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+            <input class="form-input" id="user-search" placeholder="🔍 Search users..." style="max-width:240px;font-size:12px;padding:7px 12px" oninput="renderAdminUsers()"/>
+            <select class="form-select" id="user-filter-role" style="font-size:12px;padding:7px 12px;max-width:150px" onchange="renderAdminUsers()">
+              <option value="all">All Roles</option>
+              <option value="Admin">Admin</option>
+              <option value="User">User</option>
+              <option value="Viewer">Viewer</option>
+            </select>
+          </div>
+          <div id="admin-user-table"></div>
+        </div>
+      </div>
+
+      <!-- ── 3. TASK MANAGEMENT ── -->
+      <div class="admin-section" id="adm-tasks">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 All Tasks</div>
+            <div style="display:flex;gap:8px">
+              <select class="form-select" id="adm-task-filter" style="font-size:12px;padding:6px 10px" onchange="renderAdminTaskTable()">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="high">High Priority</option>
+              </select>
+            </div>
+          </div>
+          <div id="admin-task-table"></div>
+        </div>
+      </div>
+
+      <!-- ── 4. PROJECT MANAGEMENT ── -->
+      <div class="admin-section" id="adm-projects">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div class="card-title">📁 Projects</div>
+            <button class="adm-btn-primary" onclick="openAddProjectModal()">+ New Project</button>
+          </div>
+          <div id="admin-project-list"></div>
+        </div>
+      </div>
+
+      <!-- ── 5. ROLES & PERMISSIONS ── -->
+      <div class="admin-section" id="adm-roles">
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-header"><div class="card-title">🔐 Role Management</div></div>
+            <div id="admin-roles-list"></div>
+            <button class="adm-btn-primary" style="margin-top:14px" onclick="openRoleModal()">+ Add Role</button>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🛡️ Permission Matrix</div></div>
+            <table class="adm-perm-table">
+              <thead><tr><th>Permission</th><th>Admin</th><th>User</th><th>Viewer</th></tr></thead>
+              <tbody>
+                <tr><td>View Tasks</td><td>✅</td><td>✅</td><td>✅</td></tr>
+                <tr><td>Create Tasks</td><td>✅</td><td>✅</td><td>❌</td></tr>
+                <tr><td>Delete Tasks</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Manage Users</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>View Reports</td><td>✅</td><td>✅</td><td>❌</td></tr>
+                <tr><td>System Settings</td><td>✅</td><td>❌</td><td>❌</td></tr>
+                <tr><td>Send Messages</td><td>✅</td><td>✅</td><td>❌</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 6. NOTIFICATIONS / MESSAGES ── -->
+      <div class="admin-section" id="adm-notify">
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📢 Send Message</div></div>
+            <div class="form-group">
+              <label class="form-label">To</label>
+              <select class="form-select" id="msg-to" style="font-size:13px">
+                <option value="all">📣 All Users</option>
+                <option value="admin">🔐 Admins Only</option>
+                <option value="user">👤 Regular Users</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select class="form-select" id="msg-type" style="font-size:13px">
+                <option value="info">ℹ️ Info</option>
+                <option value="warning">⚠️ Warning</option>
+                <option value="success">✅ Success</option>
+                <option value="urgent">🚨 Urgent</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Title</label>
+              <input class="form-input" id="msg-title" placeholder="Message title..." style="font-size:13px"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-input" id="msg-body" rows="4" placeholder="Write your message here..." style="font-size:13px;resize:vertical"></textarea>
+            </div>
+            <button class="adm-btn-primary" onclick="sendAdminMessage()" style="width:100%">📤 Send Message</button>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📬 Sent Messages</div>
+              <button class="tab-btn" onclick="clearMessages()" style="font-size:11px;color:var(--accent-red);border-color:var(--accent-red)">Clear All</button>
+            </div>
+            <div id="admin-messages-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 7. SETTINGS ── -->
+      <div class="admin-section" id="adm-settings">
+        <div class="settings-group">
+          <div class="settings-group-title">🎨 Appearance</div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">App Name</div><div class="settings-row-sub">Change the display name of this app</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="form-input" id="adm-app-name" value="SmartTask" style="font-size:12px;padding:6px 10px;width:140px"/>
+              <button class="tab-btn" onclick="saveAppName()" style="font-size:11px">Save</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Dark Mode (Global)</div><div class="settings-row-sub">Default theme for all users</div></div>
+            <div class="toggle" id="adm-toggle-dark" onclick="admToggle('dark')" style="cursor:pointer"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Logo / Icon</div><div class="settings-row-sub">Change the app logo emoji</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="form-input" id="adm-logo-icon" value="⚡" style="font-size:13px;padding:6px 10px;width:60px;text-align:center"/>
+              <button class="tab-btn" onclick="saveLogoIcon()" style="font-size:11px">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">🔒 Security</div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Require Login</div><div class="settings-row-sub">Users must log in to access the app</div></div>
+            <div class="toggle" id="adm-toggle-login" onclick="admToggle('login')" style="cursor:pointer"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Admin Password</div><div class="settings-row-sub">Change admin panel password</div></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input class="form-input" id="adm-password" type="password" placeholder="New password" style="font-size:12px;padding:6px 10px;width:140px"/>
+              <button class="tab-btn" onclick="saveAdminPass()" style="font-size:11px">Update</button>
+            </div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">🗄️ Data Management</div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Export All Data</div><div class="settings-row-sub">Download full app data as JSON</div></div>
+            <button class="tab-btn" onclick="exportAllData()">⬇️ Export</button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Clear All Tasks</div><div class="settings-row-sub">Delete all tasks (cannot be undone)</div></div>
+            <button class="tab-btn" style="color:var(--accent-red);border-color:var(--accent-red)" onclick="admClearTasks()">🗑️ Clear</button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-row-label">Factory Reset</div><div class="settings-row-sub">Remove all data and start fresh</div></div>
+            <button class="tab-btn" style="color:var(--accent-orange);border-color:var(--accent-orange)" onclick="admFactoryReset()">⚠️ Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 8. REPORTS ── -->
+      <div class="admin-section" id="adm-reports">
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px">
+          <div class="stat-card blue"><div class="stat-label">Total Tasks</div><div class="stat-value blue" id="rep-total">0</div></div>
+          <div class="stat-card green"><div class="stat-label">Completed</div><div class="stat-value green" id="rep-done">0</div></div>
+          <div class="stat-card orange"><div class="stat-label">Pending</div><div class="stat-value orange" id="rep-pending">0</div></div>
+          <div class="stat-card purple"><div class="stat-label">Completion %</div><div class="stat-value purple" id="rep-rate">0%</div></div>
+        </div>
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 Task by Priority</div>
+              <button class="tab-btn" onclick="exportReport()" style="font-size:11px">⬇️ Export CSV</button>
+            </div>
+            <div id="rep-priority-chart" style="margin-top:8px"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🎯 Category Breakdown</div></div>
+            <div id="rep-category-chart" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">👤 User Activity Report</div></div>
+          <div id="rep-user-activity"></div>
+        </div>
+      </div>
+
+    </div><!-- end page-admin -->
+
+    <!-- ── ADMIN MODALS ── -->
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="adm-user-modal" style="display:none">
+      <div class="modal">
+        <div class="modal-title" id="adm-user-modal-title">➕ Add New User</div>
+        <div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="adm-u-name" placeholder="e.g. Priya Shah"/></div>
+        <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="adm-u-email" placeholder="e.g. priya@email.com" type="email"/></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select class="form-select" id="adm-u-role">
+              <option>Admin</option><option selected>User</option><option>Viewer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="adm-u-status">
+              <option value="active">Active</option><option value="blocked">Blocked</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeAdmModal('adm-user-modal')">Cancel</button>
+          <button class="btn-save" onclick="saveAdminUser()">Save User</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Project Modal -->
+    <div class="modal-overlay" id="adm-project-modal" style="display:none">
+      <div class="modal">
+        <div class="modal-title">📁 New Project</div>
+        <div class="form-group"><label class="form-label">Project Name *</label><input class="form-input" id="adm-p-name" placeholder="e.g. Website Redesign"/></div>
+        <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="adm-p-desc" placeholder="Short description..."/></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="adm-p-status">
+              <option>Planning</option><option>Active</option><option>On Hold</option><option>Completed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Team</label>
+            <input class="form-input" id="adm-p-team" placeholder="e.g. Dev, Design"/>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeAdmModal('adm-project-modal')">Cancel</button>
+          <button class="btn-save" onclick="saveAdminProject()">Create Project</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Role Modal -->
+    <div class="modal-overlay" id="adm-role-modal" style="display:none">
+      <div class="modal">
+        <div class="modal-title">🔐 Add Role</div>
+        <div class="form-group"><label class="form-label">Role Name *</label><input class="form-input" id="adm-r-name" placeholder="e.g. Manager"/></div>
+        <div class="form-group"><label class="form-label">Color</label>
+          <select class="form-select" id="adm-r-color">
+            <option value="blue">Blue</option><option value="green">Green</option><option value="orange">Orange</option><option value="purple">Purple</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeAdmModal('adm-role-modal')">Cancel</button>
+          <button class="btn-save" onclick="saveAdminRole()">Add Role</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+
+<!-- ADD TASK MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title">➕ Add New Task</div>
+    <div class="form-group">
+      <label class="form-label">Task Name *</label>
+      <input class="form-input" id="task-name" placeholder="What needs to be done?" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input class="form-input" id="task-desc" placeholder="Optional description..." />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-select" id="task-priority">
+          <option value="high">🔴 High</option>
+          <option value="medium" selected>🟡 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="task-category">
+          <option value="work">Work</option>
+          <option value="personal">Personal</option>
+          <option value="study" selected>Study</option>
+          <option value="health">Health</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Due Date</label>
+      <input class="form-input" id="task-date" type="date" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

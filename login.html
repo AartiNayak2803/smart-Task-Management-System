@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>
+(function(){var t=localStorage.getItem('smarttask_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartTask – Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f5f7fc;
+  --bg2:      #ffffff;
+  --card:     #ffffff;
+  --card2:    #f0f4ff;
+  --border:   #e2e8f4;
+  --border2:  #d0d9ee;
+  --text:     #0f1624;
+  --text2:    #5a6680;
+  --text3:    #9aa3bb;
+  --blue:     #3b82f6;
+  --cyan:     #06b6d4;
+  --green:    #10b981;
+  --purple:   #8b5cf6;
+  --orange:   #f59e0b;
+  --grad:     linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  --nav-h:    64px;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: radial-gradient(circle, #c7d6f0 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.35;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ════ NAVBAR ════ */
+nav {
+  position:fixed; top:0; left:0; right:0;
+  height:var(--nav-h); z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px;
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(59,130,246,0.10);
+  transition:background 0.3s, box-shadow 0.3s;
+}
+nav::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--grad); opacity:0.75;
+}
+nav.scrolled {
+  background:rgba(255,255,255,0.97);
+  box-shadow:0 1px 30px rgba(0,0,0,0.08);
+}
+
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-logo-icon {
+  width:34px; height:34px; background:var(--grad);
+  border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 4px 14px rgba(59,130,246,0.28);
+}
+.nav-logo-text { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; letter-spacing:-0.4px; color:var(--text); }
+.nav-logo-text span { color:var(--blue); }
+
+.nav-links { display:flex; align-items:center; gap:2px; list-style:none; }
+.nav-links a {
+  padding:7px 15px; border-radius:8px; text-decoration:none;
+  font-size:13.5px; font-weight:500; color:var(--text2); transition:all 0.2s;
+}
+.nav-links a:hover { color:var(--text); background:rgba(59,130,246,0.06); }
+.nav-links a.active { color:var(--blue); background:rgba(59,130,246,0.08); }
+
+.nav-right { display:flex; align-items:center; gap:10px; }
+.btn-ghost {
+  padding:8px 18px; border-radius:8px; border:1px solid var(--border2);
+  background:transparent; color:var(--text); font-size:13px; font-weight:500;
+  cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:none;
+  transition:all 0.2s; display:inline-flex; align-items:center; gap:6px;
+}
+.btn-ghost:hover { border-color:var(--blue); color:var(--blue); background:rgba(59,130,246,0.07); }
+.btn-nav-cta {
+  padding:8px 20px; border-radius:8px; border:none;
+  background:var(--grad); color:#fff; font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'DM Sans',sans-serif; text-decoration:none;
+  transition:all 0.22s; display:inline-flex; align-items:center; gap:6px;
+  box-shadow:0 4px 16px rgba(59,130,246,0.24);
+}
+.btn-nav-cta:hover { box-shadow:0 6px 22px rgba(59,130,246,0.38); transform:translateY(-1px); }
+
+.hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+.hamburger span { width:22px; height:2px; background:var(--text); border-radius:2px; transition:all 0.3s; }
+.mob-nav {
+  display:none; position:fixed; top:var(--nav-h); left:0; right:0;
+  background:rgba(255,255,255,0.98); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  flex-direction:column; padding:16px 20px 22px; z-index:999; gap:4px;
+}
+.mob-nav.open { display:flex; }
+.mob-nav a {
+  padding:12px 14px; border-radius:8px; text-decoration:none;
+  font-size:15px; font-weight:500; color:var(--text2);
+  display:flex; align-items:center; gap:10px; transition:all 0.2s;
+}
+.mob-nav a:hover,.mob-nav a.active { background:rgba(59,130,246,0.06); color:var(--text); }
+.mob-nav a.active { color:var(--blue); }
+.mob-divider { height:1px; background:var(--border); margin:10px 0; }
+.mob-btns { display:flex; flex-direction:column; gap:8px; }
+.mob-btns a {
+  justify-content:center; border-radius:8px; padding:12px;
+  font-size:14px; font-weight:600; text-decoration:none;
+  display:flex; align-items:center; gap:6px;
+}
+.mob-ghost { border:1px solid var(--border2); color:var(--text); background:transparent; }
+.mob-cta   { background:var(--grad); color:#fff; }
+
+/* ════ MAIN LAYOUT ════ */
+.main-wrap {
+  flex:1;
+  display: flex;
+  min-height: 100vh;
+  padding-top: var(--nav-h);
+  position: relative;
+  z-index: 1;
+}
+
+/* ════ LEFT PANEL ════ */
+.left-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 60px 60px 80px;
+  position: relative;
+  overflow: hidden;
+  animation: rise 0.8s cubic-bezier(0.22,1,0.36,1) both;
+}
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.left-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -150px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.left-tag {
+  display:inline-block; font-size:11px; font-weight:700;
+  letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:20px;
+}
+
+.left-title {
+  font-family:'Syne',sans-serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight:800; letter-spacing:-2px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.left-title span {
+  background:var(--grad);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.left-desc {
+  font-size:16px; color:var(--text2);
+  line-height:1.8; max-width:400px;
+  margin-bottom: 40px;
+}
+
+/* Stats row */
+.stats-row {
+  display: flex; gap: 28px; flex-wrap: wrap;
+}
+.stat-item {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.stat-num {
+  font-family:'Syne',sans-serif;
+  font-size: 26px; font-weight: 800;
+  background:var(--grad);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-label {
+  font-size: 12px; color: var(--text3); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* Features list on left */
+.left-features {
+  display: flex; flex-direction: column; gap: 14px;
+  margin-top: 40px;
+}
+.lf-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px; color: var(--text2);
+}
+.lf-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--grad); flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(59,130,246,0.35);
+}
+
+/* divider */
+.panel-divider {
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--border2) 30%, var(--border2) 70%, transparent);
+  margin: 60px 0;
+}
+
+/* ════ RIGHT PANEL (Login Card) ════ */
+.right-panel {
+  width: 480px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 48px 40px 40px;
+  animation: rise 0.9s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+
+@keyframes rise {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.login-card {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(59,130,246,0.08), 0 2px 12px rgba(0,0,0,0.06);
+}
+.login-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--grad);
+}
+.login-card::after {
+  content:'';
+  position: absolute; top: -80px; right: -80px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.card-header { text-align:center; margin-bottom:32px; }
+.card-tag {
+  display:inline-block; font-size:11px; font-weight:700;
+  letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:12px;
+}
+.card-title {
+  font-family:'Syne',sans-serif;
+  font-size:26px; font-weight:800; letter-spacing:-0.8px;
+  margin-bottom:6px;
+}
+.card-sub {
+  font-size:14px; color:var(--text2);
+}
+
+/* Form */
+.form-group { margin-bottom:16px; position:relative; }
+.form-label {
+  display:block; font-size:12px; font-weight:600;
+  color:var(--text2); margin-bottom:7px;
+  text-transform:uppercase; letter-spacing:0.8px;
+}
+.input-wrap {
+  position:relative; display:flex; align-items:center;
+}
+.input-icon {
+  position:absolute; left:14px; font-size:15px;
+  color:var(--text3); pointer-events:none;
+  transition: color 0.2s;
+}
+.form-input {
+  width:100%; padding:12px 14px 12px 42px;
+  background: var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text); font-size:14px;
+  font-family:'DM Sans',sans-serif;
+  outline:none; transition:all 0.2s;
+}
+.form-input::placeholder { color:var(--text3); }
+.form-input:focus {
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.10);
+  background:var(--card2);
+}
+.form-input:focus + .input-icon,
+.input-wrap:focus-within .input-icon { color: var(--blue); }
+
+.eye-btn {
+  position:absolute; right:14px;
+  background:none; border:none; cursor:pointer;
+  color:var(--text3); font-size:16px;
+  transition:color 0.2s; padding:2px;
+}
+.eye-btn:hover { color:var(--text2); }
+
+/* Remember + Forgot */
+.form-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:22px;
+}
+.remember {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; color:var(--text2); cursor:pointer;
+}
+.remember input[type="checkbox"] {
+  width:15px; height:15px; accent-color:var(--blue);
+  cursor:pointer;
+}
+.forgot-link {
+  font-size:13px; color:var(--blue); text-decoration:none;
+  font-weight:500; transition:color 0.2s;
+}
+.forgot-link:hover { color:var(--cyan); }
+
+/* Buttons */
+.btn-login {
+  width:100%; padding:13px;
+  background:var(--grad);
+  border:none; border-radius:10px;
+  color:#fff; font-size:15px; font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer; transition:all 0.25s;
+  box-shadow:0 8px 24px rgba(59,130,246,0.28);
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-bottom:18px;
+}
+.btn-login:hover {
+  transform:translateY(-2px);
+  box-shadow:0 14px 32px rgba(59,130,246,0.40);
+}
+.btn-login:active { transform:translateY(0); }
+
+.or-divider {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:18px;
+}
+.or-line { flex:1; height:1px; background:var(--border); }
+.or-text { font-size:12px; color:var(--text3); font-weight:500; }
+
+.btn-google {
+  width:100%; padding:12px;
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  color:var(--text); font-size:14px; font-weight:500;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer; transition:all 0.22s;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  margin-bottom:24px;
+}
+.btn-google:hover {
+  border-color:rgba(59,130,246,0.4);
+  background:rgba(59,130,246,0.04);
+  transform:translateY(-1px);
+}
+.google-icon {
+  width:18px; height:18px; flex-shrink:0;
+}
+
+.register-row {
+  text-align:center;
+  font-size:13.5px; color:var(--text2);
+}
+.register-row a {
+  color:var(--blue); text-decoration:none; font-weight:600;
+  transition:color 0.2s;
+}
+.register-row a:hover { color:var(--cyan); }
+
+/* ════ FOOTER ════ */
+footer {
+  border-top:1px solid var(--border); padding:22px 48px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:14px; position:relative; z-index:1;
+  background:rgba(255,255,255,0.7);
+}
+.fl { display:flex; align-items:center; gap:8px; text-decoration:none; }
+.fl-icon { width:28px; height:28px; background:var(--grad); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:13px; }
+.fl-text { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:var(--text); }
+.fl-text span { color:var(--blue); }
+.flinks { display:flex; gap:22px; }
+.flinks a { font-size:12.5px; color:var(--text3); text-decoration:none; transition:color 0.2s; }
+.flinks a:hover { color:var(--text2); }
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+@media(max-width:900px){
+  .left-panel { display:none; }
+  .panel-divider { display:none; }
+  .right-panel { width:100%; padding:24px 20px; }
+}
+@media(max-width:768px){
+  nav { padding:0 20px; }
+  .nav-links,.nav-right { display:none; }
+  .hamburger { display:flex; }
+  footer { flex-direction:column; align-items:center; text-align:center; padding:20px; }
+  .flinks { flex-wrap:wrap; justify-content:center; }
+}
+</style>
+<style>
+/* ═══════════════════════════════════════
+   SmartTask – Shared Theme System
+   Light & Dark mode via CSS variables
+   ═══════════════════════════════════════ */
+
+/* ── LIGHT THEME (default) ── */
+:root {
+  --bg:       #ffffff;
+  --bg2:      #f5f7fc;
+  --card:     #ffffff;
+  --card2:    #f0f4ff;
+  --border:   #e2e8f0;
+  --border2:  #c7d4ea;
+  --text:     #0f172a;
+  --text2:    #5a6a85;
+  --text3:    #9aaabb;
+  --blue:     #3b82f6;
+  --cyan:     #06b6d4;
+  --green:    #10b981;
+  --purple:   #8b5cf6;
+  --orange:   #f59e0b;
+  --grad:     linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  --nav-h:    64px;
+  --dot-color: #c7d4ea;
+  --dot-opacity: 0.45;
+  --nav-bg:   rgba(255,255,255,0.82);
+  --nav-bg-scrolled: rgba(255,255,255,0.97);
+  --mob-bg:   rgba(255,255,255,0.98);
+  --footer-bg: var(--bg2);
+  --input-bg: var(--bg);
+  --shadow-card: 0 8px 40px rgba(59,130,246,0.08), 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-btn:  0 8px 28px rgba(59,130,246,0.26);
+}
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg:       #0d1117;
+  --bg2:      #161b22;
+  --card:     #1c2333;
+  --card2:    #21283a;
+  --border:   #2d3748;
+  --border2:  #3a4a6b;
+  --text:     #e2e8f0;
+  --text2:    #94a3b8;
+  --text3:    #4a5568;
+  --blue:     #60a5fa;
+  --cyan:     #22d3ee;
+  --green:    #34d399;
+  --purple:   #a78bfa;
+  --orange:   #fbbf24;
+  --grad:     linear-gradient(135deg, #60a5fa 0%, #22d3ee 100%);
+  --dot-color: #2d3748;
+  --dot-opacity: 0.6;
+  --nav-bg:   rgba(13,17,23,0.85);
+  --nav-bg-scrolled: rgba(13,17,23,0.97);
+  --mob-bg:   rgba(22,27,34,0.99);
+  --footer-bg: var(--bg2);
+  --input-bg: var(--bg2);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.4), 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-btn:  0 8px 28px rgba(96,165,250,0.22);
+}
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.22s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--blue);
+  background: rgba(59,130,246,0.1);
+  color: var(--blue);
+  transform: rotate(20deg);
+}
+
+/* ── SMOOTH THEME TRANSITION ── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+/* Don't transition transforms/animations */
+.btn-cta, .btn-nav-cta, .btn-login, .btn-register, .acard {
+  transition: all 0.25s;
+}
+
+/* ── DARK: body dot grid fix ── */
+[data-theme="dark"] body::before {
+  background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
+  opacity: var(--dot-opacity);
+}
+
+/* ── DARK: navbar ── */
+[data-theme="dark"] nav {
+  background: var(--nav-bg);
+  border-bottom-color: rgba(96,165,250,0.12);
+}
+[data-theme="dark"] nav.scrolled {
+  background: var(--nav-bg-scrolled);
+  box-shadow: 0 1px 32px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .mob-nav {
+  background: var(--mob-bg);
+  border-bottom-color: var(--border);
+}
+
+/* ── DARK: cards ── */
+[data-theme="dark"] .fc,
+[data-theme="dark"] .acard,
+[data-theme="dark"] .login-card,
+[data-theme="dark"] .register-card {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
+[data-theme="dark"] .acard:hover,
+[data-theme="dark"] .fc:hover {
+  background: var(--card2);
+  border-color: var(--border2);
+}
+
+/* ── DARK: form inputs ── */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select {
+  background: var(--input-bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+  background: var(--card2);
+}
+
+/* ── DARK: ghost buttons ── */
+[data-theme="dark"] .btn-ghost {
+  border-color: var(--border2);
+  color: var(--text);
+}
+[data-theme="dark"] .btn-ghost:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(96,165,250,0.1);
+}
+
+/* ── DARK: chips ── */
+[data-theme="dark"] .chip {
+  background: rgba(96,165,250,0.08);
+  border-color: rgba(96,165,250,0.2);
+  color: var(--text2);
+}
+
+/* ── DARK: feat items ── */
+[data-theme="dark"] .feat-item {
+  background: rgba(96,165,250,0.06);
+  border-color: rgba(96,165,250,0.12);
+}
+
+/* ── DARK: tech items ── */
+[data-theme="dark"] .tech-item {
+  background: rgba(96,165,250,0.05);
+  border-color: rgba(96,165,250,0.10);
+}
+
+/* ── DARK: steps ── */
+[data-theme="dark"] .step-num {
+  background: rgba(96,165,250,0.12);
+  color: var(--blue);
+}
+
+/* ── DARK: hero pill ── */
+[data-theme="dark"] .hero-pill {
+  background: rgba(96,165,250,0.10);
+  border-color: rgba(96,165,250,0.22);
+}
+
+/* ── DARK: cta box ── */
+[data-theme="dark"] .cta-box {
+  background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(167,139,250,0.04) 100%);
+  border-color: rgba(96,165,250,0.16);
+}
+
+/* ── DARK: footer ── */
+[data-theme="dark"] footer {
+  background: var(--footer-bg);
+  border-top-color: var(--border);
+}
+
+/* ── DARK: or-divider ── */
+[data-theme="dark"] .or-line { background: var(--border); }
+
+/* ── DARK: remember checkbox ── */
+[data-theme="dark"] .remember { color: var(--text2); }
+
+/* ── DARK: pass strength bar ── */
+[data-theme="dark"] .strength-bar-bg { background: var(--border); }
+
+/* ── DARK: panel divider ── */
+[data-theme="dark"] .panel-divider {
+  background: linear-gradient(to bottom, transparent, var(--border2) 30%, var(--border2) 70%, transparent);
+}
+
+/* ── DARK: left panel blobs ── */
+[data-theme="dark"] .left-panel::before {
+  background: radial-gradient(circle, rgba(96,165,250,0.06) 0%, transparent 70%);
+}
+[data-theme="dark"] .left-panel::after {
+  background: radial-gradient(circle, rgba(34,211,238,0.04) 0%, transparent 70%);
+}
+
+/* ── DARK: scrollbar ── */
+[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg2); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* ── DARK: already-logged-in toast ── */
+[data-theme="dark"] #st-toast {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="nav">
+  <a class="nav-logo" href="public_home.html">
+    <div class="nav-logo-icon">⚡</div>
+    <div class="nav-logo-text">Smart<span>Task</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="public_home.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="login.html" class="active">Login</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-toggle" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+    <a class="btn-ghost" href="login.html">Login</a>
+    <a class="btn-nav-cta" href="register.html">Register Free ↗</a>
+  </div>
+  <div class="hamburger" id="ham" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mob-nav" id="mob">
+  <a href="public_home.html" onclick="closeNav()">🏠 Home</a>
+  <a href="about.html" onclick="closeNav()">ℹ️ About</a>
+  <a href="login.html" class="active" onclick="closeNav()">🔑 Login</a>
+  <button class="theme-toggle" style="align-self:flex-start;margin:4px 0" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+  <div class="mob-divider"></div>
+  <div class="mob-btns">
+    <a class="mob-ghost" href="login.html">🔑 Login</a>
+    <a class="mob-cta" href="register.html">📝 Register Free</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-tag">Welcome Back</div>
+    <h1 class="left-title">
+      Manage Your<br>Tasks <span>Smartly</span> 🚀
+    </h1>
+    <p class="left-desc">
+      Stay organized, stay productive. Your smart task companion is ready — log in and take control of your day.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num">10K+</div>
+        <div class="stat-label">Active Users</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Productivity Up</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">Free</div>
+        <div class="stat-label">Forever Plan</div>
+      </div>
+    </div>
+
+    <div class="left-features">
+      <div class="lf-item">
+        <div class="lf-dot"></div>
+        Create, Edit & Track Tasks Instantly
+      </div>
+      <div class="lf-item">
+        <div class="lf-dot"></div>
+        Mood Tracker & Habit Streaks
+      </div>
+      <div class="lf-item">
+        <div class="lf-dot"></div>
+        Analytics & Weekly Summaries
+      </div>
+      <div class="lf-item">
+        <div class="lf-dot"></div>
+        Secure & Private — Always
+      </div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="panel-divider"></div>
+
+  <!-- RIGHT PANEL (Login Card) -->
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="card-header">
+        <div class="card-tag">Secure Login</div>
+        <div class="card-title">Welcome Back 👋</div>
+        <div class="card-sub">Login to your SmartTask account</div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input class="form-input" type="email" placeholder="you@example.com" id="emailInput">
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input class="form-input" type="password" placeholder="Enter your password" id="passInput" style="padding-right:44px;">
+          <button class="eye-btn" onclick="togglePass()" id="eyeBtn" title="Show/Hide password">👁️</button>
+        </div>
+      </div>
+
+      <!-- Remember + Forgot -->
+      <div class="form-row">
+        <label class="remember">
+          <input type="checkbox"> Remember me
+        </label>
+        <a href="#" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <!-- Login Button -->
+      <button class="btn-login" onclick="handleLogin()">
+        🔑 Login
+      </button>
+
+      <!-- OR Divider -->
+      <div class="or-divider">
+        <div class="or-line"></div>
+        <div class="or-text">or</div>
+        <div class="or-line"></div>
+      </div>
+
+      <!-- Google Login -->
+      <button class="btn-google">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Login with Google
+      </button>
+
+      <!-- Register Link -->
+      <div class="register-row">
+        Don't have an account? <a href="register.html">Register Free ↗</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a class="fl" href="public_home.html">
+    <div class="fl-icon">⚡</div>
+    <div class="fl-text">Smart<span>Task</span></div>
+  </a>
+  <div class="flinks">
+    <a href="public_home.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  });
+  function toggleNav(){ document.getElementById('mob').classList.toggle('open'); }
+  function closeNav() { document.getElementById('mob').classList.remove('open'); }
+
+  function togglePass() {
+    const inp = document.getElementById('passInput');
+    const btn = document.getElementById('eyeBtn');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      inp.type = 'password';
+      btn.textContent = '👁️';
+    }
+  }
+
+  function showMsg(msg, type) {
+    // Remove existing
+    const old = document.getElementById('login-msg');
+    if (old) old.remove();
+    const d = document.createElement('div');
+    d.id = 'login-msg';
+    d.style.cssText = `
+      padding: 12px 16px; border-radius: 10px; font-size: 13.5px;
+      font-weight: 500; margin-bottom: 16px; text-align: center;
+      ${type === 'error'
+        ? 'background:rgba(239,68,68,0.10); border:1px solid rgba(239,68,68,0.25); color:#ef4444;'
+        : 'background:rgba(16,185,129,0.10); border:1px solid rgba(16,185,129,0.25); color:#10b981;'}
+    `;
+    d.textContent = msg;
+    const btn = document.querySelector('.btn-login');
+    btn.parentElement.insertBefore(d, btn);
+  }
+
+  // ✅ Show success message if redirected from signup
+  document.addEventListener('DOMContentLoaded', function () {
+    if (localStorage.getItem('smarttask_signup_success') === 'true') {
+      localStorage.removeItem('smarttask_signup_success');
+      showMsg('🎉 Account created successfully! Please login to continue.', 'success');
+    }
+  });
+
+  function handleLogin() {
+    const email = document.getElementById('emailInput').value.trim();
+    const pass  = document.getElementById('passInput').value;
+
+    if (!email || !pass) {
+      showMsg('⚠️ Please fill in all fields.', 'error');
+      return;
+    }
+
+    // Get all registered users
+    const users = JSON.parse(localStorage.getItem('smarttask_users') || '[]');
+    // Also check old single-user key for backwards compat
+    const oldUser = JSON.parse(localStorage.getItem('smarttask_user') || 'null');
+    if (oldUser) users.push(oldUser);
+
+    const found = users.find(u => u.email.toLowerCase().trim() === email.toLowerCase() && u.password === pass);
+
+    if (!found) {
+      const emailExists = users.find(u => u.email.toLowerCase().trim() === email.toLowerCase());
+      if (emailExists) {
+        showMsg('❌ Wrong password. Please try again.', 'error');
+      } else {
+        showMsg('❌ No account found with this email. Please register first.', 'error');
+      }
+      return;
+    }
+
+    // Save current session
+    localStorage.setItem('smarttask_logged_in', 'true');
+    localStorage.setItem('smarttask_current_user', JSON.stringify(found));
+
+    showMsg('✅ Login successful! Redirecting...', 'success');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+  }
+</script>
+<script>
+/* ═══════════════════════════════════════
+   SmartTask – Shared Theme Script
+   Include this at END of every page's <body>
+   ═══════════════════════════════════════ */
+
+(function () {
+  // ── Apply saved theme immediately (no flash) ──
+  const saved = localStorage.getItem('smarttask_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('smarttask_theme', theme);
+    // Update all toggle buttons on page
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      btn.title = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    });
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  // ── Wait for DOM ──
+  document.addEventListener('DOMContentLoaded', function () {
+    applyTheme(saved); // re-apply to update button icons after DOM ready
+
+    // Attach click to all toggle buttons
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.addEventListener('click', toggleTheme);
+    });
+  });
+
+  // Expose globally so inline onclick can also call it
+  window.toggleTheme = toggleTheme;
+})();
+
+</script>
+</body>
+</html>

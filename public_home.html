@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>
+(function(){var t=localStorage.getItem('smarttask_theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartTask – Smart Task Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+<style>
+/* ── LIGHT THEME (default) ── */
+:root {
+  --bg:          #ffffff;
+  --bg2:         #f5f7fc;
+  --card:        #ffffff;
+  --card2:       #f0f4ff;
+  --border:      #e2e8f0;
+  --border2:     #c7d4ea;
+  --text:        #0f172a;
+  --text2:       #5a6a85;
+  --text3:       #9aaabb;
+  --blue:        #3b82f6;
+  --cyan:        #06b6d4;
+  --green:       #10b981;
+  --purple:      #8b5cf6;
+  --orange:      #f59e0b;
+  --grad:        linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  --nav-h:       64px;
+  --dot-color:   #c7d4ea;
+  --dot-opacity: 0.45;
+  --nav-bg:      rgba(255,255,255,0.82);
+  --nav-bg-scrolled: rgba(255,255,255,0.97);
+  --mob-bg:      rgba(255,255,255,0.98);
+  --footer-bg:   var(--bg2);
+  --input-bg:    var(--bg);
+  --shadow-card: 0 8px 40px rgba(59,130,246,0.08), 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-btn:  0 8px 28px rgba(59,130,246,0.26);
+}
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg:          #0d1117;
+  --bg2:         #161b22;
+  --card:        #1c2333;
+  --card2:       #21283a;
+  --border:      #2d3748;
+  --border2:     #3a4a6b;
+  --text:        #e2e8f0;
+  --text2:       #94a3b8;
+  --text3:       #4a5568;
+  --blue:        #60a5fa;
+  --cyan:        #22d3ee;
+  --green:       #34d399;
+  --purple:      #a78bfa;
+  --orange:      #fbbf24;
+  --grad:        linear-gradient(135deg, #60a5fa 0%, #22d3ee 100%);
+  --dot-color:   #2d3748;
+  --dot-opacity: 0.6;
+  --nav-bg:      rgba(13,17,23,0.85);
+  --nav-bg-scrolled: rgba(13,17,23,0.97);
+  --mob-bg:      rgba(22,27,34,0.99);
+  --footer-bg:   var(--bg2);
+  --input-bg:    var(--bg2);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.4), 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-btn:  0 8px 28px rgba(96,165,250,0.22);
+}
+
+/* ── BLACK & WHITE THEME ── */
+[data-theme="bw"] {
+  --bg:          #ffffff;
+  --bg2:         #f0f0f0;
+  --card:        #ffffff;
+  --card2:       #e8e8e8;
+  --border:      #cccccc;
+  --border2:     #999999;
+  --text:        #000000;
+  --text2:       #444444;
+  --text3:       #888888;
+  --blue:        #000000;
+  --cyan:        #333333;
+  --green:       #000000;
+  --purple:      #222222;
+  --orange:      #555555;
+  --grad:        linear-gradient(135deg, #000000 0%, #555555 100%);
+  --dot-color:   #bbbbbb;
+  --dot-opacity: 0.35;
+  --nav-bg:      rgba(255,255,255,0.92);
+  --nav-bg-scrolled: rgba(255,255,255,0.99);
+  --mob-bg:      rgba(255,255,255,0.99);
+  --footer-bg:   var(--bg2);
+  --input-bg:    var(--bg);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.10), 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-btn:  0 8px 28px rgba(0,0,0,0.20);
+}
+/* BW: hero gradient text override */
+[data-theme="bw"] .hero-title span {
+  background: #000000 !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+/* BW: CTA button override */
+[data-theme="bw"] .btn-cta,
+[data-theme="bw"] .btn-nav-cta {
+  background: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25) !important;
+}
+[data-theme="bw"] .btn-cta:hover,
+[data-theme="bw"] .btn-nav-cta:hover {
+  background: #333333 !important;
+}
+/* BW: chips */
+[data-theme="bw"] .chip {
+  background: #f0f0f0;
+  border-color: #999;
+  color: #333;
+}
+/* BW: feat/step accent */
+[data-theme="bw"] .feat-icon,
+[data-theme="bw"] .step-num {
+  background: #000 !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Dot grid */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: radial-gradient(circle, #c7d4ea 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.45;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ════ NAVBAR ════ */
+nav {
+  position:fixed; top:0; left:0; right:0;
+  height:var(--nav-h); z-index:1000;
+  display:flex; align-items:center;
+  justify-content:space-between;
+  padding:0 48px;
+  background:rgba(255,255,255,0.80);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(59,130,246,0.10);
+  transition:background 0.3s, box-shadow 0.3s;
+}
+nav.scrolled {
+  background:rgba(255,255,255,0.97);
+  box-shadow:0 1px 32px rgba(59,130,246,0.10);
+  border-bottom-color:rgba(59,130,246,0.16);
+}
+nav::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--grad); opacity:0.65;
+}
+
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-logo-icon {
+  width:34px; height:34px; background:var(--grad);
+  border-radius:9px; display:flex; align-items:center; justify-content:center;
+  font-size:17px; box-shadow:0 4px 14px rgba(59,130,246,0.28);
+}
+.nav-logo-text {
+  font-family:'Syne',sans-serif; font-size:19px;
+  font-weight:800; letter-spacing:-0.4px; color:var(--text);
+}
+.nav-logo-text span { color:var(--blue); }
+
+.nav-links { display:flex; align-items:center; gap:2px; list-style:none; }
+.nav-links a {
+  padding:7px 15px; border-radius:8px; text-decoration:none;
+  font-size:13.5px; font-weight:500; color:var(--text2);
+  transition:all 0.2s;
+}
+.nav-links a:hover { color:var(--text); background:rgba(0,0,0,0.04); }
+.nav-links a.active { color:var(--blue); background:rgba(59,130,246,0.08); }
+
+.nav-right { display:flex; align-items:center; gap:10px; }
+
+.btn-ghost {
+  padding:8px 18px; border-radius:8px;
+  border:1px solid var(--border2); background:transparent;
+  color:var(--text); font-size:13px; font-weight:500;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  text-decoration:none; transition:all 0.2s;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn-ghost:hover { border-color:var(--blue); color:var(--blue); background:rgba(59,130,246,0.06); }
+
+.btn-nav-cta {
+  padding:8px 20px; border-radius:8px; border:none;
+  background:var(--grad); color:#fff; font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  text-decoration:none; transition:all 0.22s;
+  display:inline-flex; align-items:center; gap:6px;
+  box-shadow:0 4px 16px rgba(59,130,246,0.24);
+  position:relative; overflow:hidden;
+}
+.btn-nav-cta:hover { box-shadow:0 6px 22px rgba(59,130,246,0.38); transform:translateY(-1px); }
+
+.hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+.hamburger span { width:22px; height:2px; background:var(--text); border-radius:2px; transition:all 0.3s; }
+
+.mob-nav {
+  display:none; position:fixed;
+  top:var(--nav-h); left:0; right:0;
+  background:rgba(255,255,255,0.98); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  flex-direction:column; padding:16px 20px 22px;
+  z-index:999; gap:4px;
+  box-shadow:0 8px 24px rgba(59,130,246,0.08);
+}
+.mob-nav.open { display:flex; }
+.mob-nav a {
+  padding:12px 14px; border-radius:8px; text-decoration:none;
+  font-size:15px; font-weight:500; color:var(--text2);
+  display:flex; align-items:center; gap:10px; transition:all 0.2s;
+}
+.mob-nav a:hover,.mob-nav a.active { background:rgba(0,0,0,0.04); color:var(--text); }
+.mob-nav a.active { color:var(--blue); }
+.mob-divider { height:1px; background:var(--border); margin:10px 0; }
+.mob-btns { display:flex; flex-direction:column; gap:8px; }
+.mob-btns a {
+  justify-content:center; border-radius:8px; padding:12px;
+  font-size:14px; font-weight:600; text-decoration:none;
+  display:flex; align-items:center; gap:6px;
+}
+.mob-ghost { border:1px solid var(--border2); color:var(--text); background:transparent; }
+.mob-cta   { background:var(--grad); color:#fff; }
+
+/* ════ HERO ════ */
+.hero {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+  padding:calc(var(--nav-h) + 70px) 24px 90px;
+  position:relative; z-index:1;
+}
+.blob1 {
+  position:absolute; top:15%; left:50%; transform:translateX(-50%);
+  width:700px; height:500px;
+  background:radial-gradient(ellipse, rgba(59,130,246,0.08) 0%, transparent 65%);
+  pointer-events:none;
+}
+.blob2 {
+  position:absolute; top:55%; left:10%; width:360px; height:360px;
+  background:radial-gradient(ellipse, rgba(139,92,246,0.05) 0%, transparent 65%);
+  pointer-events:none;
+}
+.blob3 {
+  position:absolute; top:40%; right:8%; width:280px; height:280px;
+  background:radial-gradient(ellipse, rgba(6,182,212,0.05) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.hero-inner {
+  max-width:700px; position:relative; z-index:2;
+  animation:rise 0.9s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes rise {
+  from { opacity:0; transform:translateY(36px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.hero-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:5px 14px 5px 8px;
+  background:rgba(59,130,246,0.07);
+  border:1px solid rgba(59,130,246,0.18);
+  border-radius:100px; font-size:12px; font-weight:600;
+  color:var(--blue); letter-spacing:0.4px; margin-bottom:32px;
+}
+.pill-dot {
+  width:6px; height:6px; background:var(--blue);
+  border-radius:50%; animation:blink 2s infinite;
+}
+@keyframes blink {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:0.4; transform:scale(0.7); }
+}
+
+h1 {
+  font-family:'Syne',sans-serif;
+  font-size:clamp(38px,6.5vw,68px);
+  font-weight:800; line-height:1.08;
+  letter-spacing:-2px; margin-bottom:22px;
+  color:var(--text);
+}
+h1 .gt {
+  background:var(--grad);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-desc {
+  font-size:17px; color:var(--text2);
+  line-height:1.75; max-width:520px;
+  margin:0 auto 42px;
+}
+
+.hero-actions { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+.btn-cta {
+  padding:14px 34px; background:var(--grad);
+  color:#fff; border:none; border-radius:10px;
+  font-size:15px; font-weight:600; font-family:'DM Sans',sans-serif;
+  cursor:pointer; text-decoration:none;
+  display:inline-flex; align-items:center; gap:8px;
+  box-shadow:0 8px 28px rgba(59,130,246,0.26); transition:all 0.25s;
+}
+.btn-cta:hover { transform:translateY(-2px); box-shadow:0 14px 36px rgba(59,130,246,0.40); }
+
+.btn-ol {
+  padding:14px 34px; border:1px solid var(--border2);
+  border-radius:10px; background:rgba(0,0,0,0.02);
+  color:var(--text); font-size:15px; font-weight:500;
+  font-family:'DM Sans',sans-serif; cursor:pointer;
+  text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+  transition:all 0.25s;
+}
+.btn-ol:hover { border-color:var(--blue); color:var(--blue); background:rgba(59,130,246,0.04); }
+
+.chips {
+  display:flex; gap:10px; justify-content:center;
+  flex-wrap:wrap; margin-top:52px;
+}
+.chip {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 16px;
+  background:#f8fafc;
+  border:1px solid var(--border);
+  border-radius:100px; font-size:13px; color:var(--text2);
+  transition:all 0.2s;
+}
+.chip:hover { border-color:var(--border2); color:var(--text); background:#f0f4ff; }
+
+/* ════ FEATURES ════ */
+.section {
+  padding:90px 24px; max-width:960px;
+  margin:0 auto; position:relative; z-index:1;
+  text-align:center;
+}
+.tag {
+  display:inline-block; font-size:11px; font-weight:700;
+  letter-spacing:2.5px; text-transform:uppercase;
+  color:var(--cyan); margin-bottom:14px;
+}
+.sh {
+  font-family:'Syne',sans-serif;
+  font-size:clamp(26px,4vw,40px);
+  font-weight:800; letter-spacing:-1px;
+  margin-bottom:14px;
+  color:var(--text);
+}
+.sp {
+  color:var(--text2); font-size:15px; line-height:1.75;
+  max-width:520px; margin:0 auto 56px;
+}
+
+.grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+  text-align:left;
+}
+
+.fc {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:26px 22px;
+  transition:all 0.28s; position:relative; overflow:hidden;
+  box-shadow:0 2px 8px rgba(59,130,246,0.04);
+}
+.fc::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:var(--grad); opacity:0; transition:opacity 0.28s;
+}
+.fc:hover {
+  border-color:var(--border2); background:var(--card2);
+  transform:translateY(-4px); box-shadow:0 16px 40px rgba(59,130,246,0.10);
+}
+.fc:hover::before { opacity:1; }
+
+.fc-ico {
+  width:42px; height:42px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; margin-bottom:16px;
+}
+.ic-blue   { background:rgba(59,130,246,0.10); }
+.ic-cyan   { background:rgba(6,182,212,0.10); }
+.ic-green  { background:rgba(16,185,129,0.10); }
+.ic-purple { background:rgba(139,92,246,0.10); }
+.ic-orange { background:rgba(245,158,11,0.10); }
+.ic-pink   { background:rgba(236,72,153,0.10); }
+
+.fc-title {
+  font-family:'Syne',sans-serif; font-size:15px;
+  font-weight:700; color:var(--text); margin-bottom:8px;
+}
+.fc-desc { font-size:13px; color:var(--text2); line-height:1.65; }
+
+/* ════ CTA ════ */
+.cta-wrap { padding:60px 24px 90px; position:relative; z-index:1; }
+.cta-box {
+  max-width:720px; margin:0 auto;
+  background:linear-gradient(135deg,rgba(59,130,246,0.06) 0%,rgba(139,92,246,0.04) 100%);
+  border:1px solid rgba(59,130,246,0.14);
+  border-radius:24px; padding:56px 48px; text-align:center;
+  position:relative; overflow:hidden;
+  box-shadow:0 4px 24px rgba(59,130,246,0.06);
+}
+.cta-box::before {
+  content:''; position:absolute; top:-80px; left:50%;
+  transform:translateX(-50%); width:400px; height:300px;
+  background:radial-gradient(ellipse,rgba(59,130,246,0.10) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ════ FOOTER ════ */
+footer {
+  border-top:1px solid var(--border); padding:22px 48px;
+  display:flex; align-items:center;
+  justify-content:space-between; flex-wrap:wrap; gap:14px;
+  position:relative; z-index:1;
+  background:var(--bg2);
+}
+.fl { display:flex; align-items:center; gap:8px; text-decoration:none; }
+.fl-icon {
+  width:28px; height:28px; background:var(--grad);
+  border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:13px;
+}
+.fl-text { font-family:'Syne',sans-serif; font-size:14px; font-weight:800; color:var(--text); }
+.fl-text span { color:var(--blue); }
+.flinks { display:flex; gap:22px; }
+.flinks a { font-size:12.5px; color:var(--text3); text-decoration:none; transition:color 0.2s; }
+.flinks a:hover { color:var(--text2); }
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg2); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+@media(max-width:768px){
+  nav { padding:0 20px; }
+  .nav-links,.nav-right { display:none; }
+  .hamburger { display:flex; }
+  .grid { grid-template-columns:1fr 1fr; }
+  footer { flex-direction:column; align-items:center; text-align:center; padding:20px; }
+  .flinks { flex-wrap:wrap; justify-content:center; }
+  .cta-box { padding:36px 24px; }
+}
+@media(max-width:480px){ .grid { grid-template-columns:1fr; } }
+</style>
+<style>
+/* ═══════════════════════════════════════
+   SmartTask – Shared Theme System
+   Light & Dark mode via CSS variables
+   ═══════════════════════════════════════ */
+
+/* ── LIGHT THEME (default) ── */
+:root {
+  --bg:       #ffffff;
+  --bg2:      #f5f7fc;
+  --card:     #ffffff;
+  --card2:    #f0f4ff;
+  --border:   #e2e8f0;
+  --border2:  #c7d4ea;
+  --text:     #0f172a;
+  --text2:    #5a6a85;
+  --text3:    #9aaabb;
+  --blue:     #3b82f6;
+  --cyan:     #06b6d4;
+  --green:    #10b981;
+  --purple:   #8b5cf6;
+  --orange:   #f59e0b;
+  --grad:     linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  --nav-h:    64px;
+  --dot-color: #c7d4ea;
+  --dot-opacity: 0.45;
+  --nav-bg:   rgba(255,255,255,0.82);
+  --nav-bg-scrolled: rgba(255,255,255,0.97);
+  --mob-bg:   rgba(255,255,255,0.98);
+  --footer-bg: var(--bg2);
+  --input-bg: var(--bg);
+  --shadow-card: 0 8px 40px rgba(59,130,246,0.08), 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-btn:  0 8px 28px rgba(59,130,246,0.26);
+}
+
+/* ── DARK THEME ── */
+[data-theme="dark"] {
+  --bg:       #0d1117;
+  --bg2:      #161b22;
+  --card:     #1c2333;
+  --card2:    #21283a;
+  --border:   #2d3748;
+  --border2:  #3a4a6b;
+  --text:     #e2e8f0;
+  --text2:    #94a3b8;
+  --text3:    #4a5568;
+  --blue:     #60a5fa;
+  --cyan:     #22d3ee;
+  --green:    #34d399;
+  --purple:   #a78bfa;
+  --orange:   #fbbf24;
+  --grad:     linear-gradient(135deg, #60a5fa 0%, #22d3ee 100%);
+  --dot-color: #2d3748;
+  --dot-opacity: 0.6;
+  --nav-bg:   rgba(13,17,23,0.85);
+  --nav-bg-scrolled: rgba(13,17,23,0.97);
+  --mob-bg:   rgba(22,27,34,0.99);
+  --footer-bg: var(--bg2);
+  --input-bg: var(--bg2);
+  --shadow-card: 0 8px 40px rgba(0,0,0,0.4), 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-btn:  0 8px 28px rgba(96,165,250,0.22);
+}
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.22s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  border-color: var(--blue);
+  background: rgba(59,130,246,0.1);
+  color: var(--blue);
+  transform: rotate(20deg);
+}
+
+/* ── SMOOTH THEME TRANSITION ── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+/* Don't transition transforms/animations */
+.btn-cta, .btn-nav-cta, .btn-login, .btn-register, .acard {
+  transition: all 0.25s;
+}
+
+/* ── DARK: body dot grid fix ── */
+[data-theme="dark"] body::before {
+  background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px);
+  opacity: var(--dot-opacity);
+}
+
+/* ── DARK: navbar ── */
+[data-theme="dark"] nav {
+  background: var(--nav-bg);
+  border-bottom-color: rgba(96,165,250,0.12);
+}
+[data-theme="dark"] nav.scrolled {
+  background: var(--nav-bg-scrolled);
+  box-shadow: 0 1px 32px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .mob-nav {
+  background: var(--mob-bg);
+  border-bottom-color: var(--border);
+}
+
+/* ── DARK: cards ── */
+[data-theme="dark"] .fc,
+[data-theme="dark"] .acard,
+[data-theme="dark"] .login-card,
+[data-theme="dark"] .register-card {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
+[data-theme="dark"] .acard:hover,
+[data-theme="dark"] .fc:hover {
+  background: var(--card2);
+  border-color: var(--border2);
+}
+
+/* ── DARK: form inputs ── */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select {
+  background: var(--input-bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+  background: var(--card2);
+}
+
+/* ── DARK: ghost buttons ── */
+[data-theme="dark"] .btn-ghost {
+  border-color: var(--border2);
+  color: var(--text);
+}
+[data-theme="dark"] .btn-ghost:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(96,165,250,0.1);
+}
+
+/* ── DARK: chips ── */
+[data-theme="dark"] .chip {
+  background: rgba(96,165,250,0.08);
+  border-color: rgba(96,165,250,0.2);
+  color: var(--text2);
+}
+
+/* ── DARK: feat items ── */
+[data-theme="dark"] .feat-item {
+  background: rgba(96,165,250,0.06);
+  border-color: rgba(96,165,250,0.12);
+}
+
+/* ── DARK: tech items ── */
+[data-theme="dark"] .tech-item {
+  background: rgba(96,165,250,0.05);
+  border-color: rgba(96,165,250,0.10);
+}
+
+/* ── DARK: steps ── */
+[data-theme="dark"] .step-num {
+  background: rgba(96,165,250,0.12);
+  color: var(--blue);
+}
+
+/* ── DARK: hero pill ── */
+[data-theme="dark"] .hero-pill {
+  background: rgba(96,165,250,0.10);
+  border-color: rgba(96,165,250,0.22);
+}
+
+/* ── DARK: cta box ── */
+[data-theme="dark"] .cta-box {
+  background: linear-gradient(135deg, rgba(96,165,250,0.06) 0%, rgba(167,139,250,0.04) 100%);
+  border-color: rgba(96,165,250,0.16);
+}
+
+/* ── DARK: footer ── */
+[data-theme="dark"] footer {
+  background: var(--footer-bg);
+  border-top-color: var(--border);
+}
+
+/* ── DARK: or-divider ── */
+[data-theme="dark"] .or-line { background: var(--border); }
+
+/* ── DARK: remember checkbox ── */
+[data-theme="dark"] .remember { color: var(--text2); }
+
+/* ── DARK: pass strength bar ── */
+[data-theme="dark"] .strength-bar-bg { background: var(--border); }
+
+/* ── DARK: panel divider ── */
+[data-theme="dark"] .panel-divider {
+  background: linear-gradient(to bottom, transparent, var(--border2) 30%, var(--border2) 70%, transparent);
+}
+
+/* ── DARK: left panel blobs ── */
+[data-theme="dark"] .left-panel::before {
+  background: radial-gradient(circle, rgba(96,165,250,0.06) 0%, transparent 70%);
+}
+[data-theme="dark"] .left-panel::after {
+  background: radial-gradient(circle, rgba(34,211,238,0.04) 0%, transparent 70%);
+}
+
+/* ── DARK: scrollbar ── */
+[data-theme="dark"] ::-webkit-scrollbar-track { background: var(--bg2); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* ── DARK: already-logged-in toast ── */
+[data-theme="dark"] #st-toast {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="nav">
+  <a class="nav-logo" href="#home">
+    <div class="nav-logo-icon">⚡</div>
+    <div class="nav-logo-text">Smart<span>Task</span></div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="theme-toggle" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+    <a class="btn-ghost" href="login.html">Login</a>
+    <a class="btn-nav-cta" href="register.html">Register Free ↗</a>
+  </div>
+
+  <div class="hamburger" id="ham" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mob-nav" id="mob">
+  <a href="#home" class="active" onclick="closeNav()">🏠 Home</a>
+  <a href="#about" onclick="closeNav()">ℹ️ About</a>
+  <button class="theme-toggle" style="align-self:flex-start;margin:4px 0" title="Toggle theme" onclick="toggleTheme()">🌙</button>
+  <div class="mob-divider"></div>
+  <div class="mob-btns">
+    <a class="mob-ghost" href="login.html">🔑 Login</a>
+    <a class="mob-cta"   href="register.html">📝 Register Free</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero">
+    <div class="blob1"></div>
+    <div class="blob2"></div>
+    <div class="blob3"></div>
+    <div class="hero-inner">
+      <div class="hero-pill"><div class="pill-dot"></div> Now Live · v1.0.0</div>
+      <h1>Your Tasks.<br><span class="gt">Your Momentum.</span></h1>
+      <p class="hero-desc">Plan smarter, build habits, track your mood — SmartTask brings everything into one clean, distraction-free workspace.</p>
+      <div class="hero-actions">
+        <a class="btn-cta" href="register.html">🚀 Get Started — It's Free</a>
+        <a class="btn-ol"  href="#about">See Features →</a>
+      </div>
+      <div class="chips">
+        <div class="chip">✅ Task Manager</div>
+        <div class="chip">🔥 Habit Streaks</div>
+        <div class="chip">😊 Mood Tracker</div>
+        <div class="chip">📊 Analytics</div>
+        <div class="chip">🔔 Reminders</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section">
+    <div class="tag">What's Inside</div>
+    <h2 class="sh">Built for Real Productivity</h2>
+    <p class="sp">Every feature is designed to help you stay focused, build better habits, and actually get things done.</p>
+    <div class="grid">
+      <div class="fc">
+        <div class="fc-ico ic-blue">📊</div>
+        <div class="fc-title">Dashboard</div>
+        <div class="fc-desc">Stats, charts and streaks at a glance. See exactly where your time and energy is going.</div>
+      </div>
+      <div class="fc">
+        <div class="fc-ico ic-cyan">✅</div>
+        <div class="fc-title">Task Manager</div>
+        <div class="fc-desc">Add, prioritize, filter and complete tasks. Export to CSV anytime you need.</div>
+      </div>
+      <div class="fc">
+        <div class="fc-ico ic-green">🔥</div>
+        <div class="fc-title">Habits & Streaks</div>
+        <div class="fc-desc">Track Exercise, Reading, Water — build momentum and never break the chain.</div>
+      </div>
+      <div class="fc">
+        <div class="fc-ico ic-purple">😊</div>
+        <div class="fc-title">Mood Tracker</div>
+        <div class="fc-desc">Log daily mood with emoji scores. See weekly averages and understand your patterns.</div>
+      </div>
+      <div class="fc">
+        <div class="fc-ico ic-orange">🔔</div>
+        <div class="fc-title">Reminders</div>
+        <div class="fc-desc">Task reminders, streak alerts and daily summaries — so nothing slips through.</div>
+      </div>
+      <div class="fc">
+        <div class="fc-ico ic-pink">📈</div>
+        <div class="fc-title">Analytics</div>
+        <div class="fc-desc">Productivity charts, weekly summaries and performance trends over time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <div class="cta-box">
+    <div class="tag">Get Started</div>
+    <h2 class="sh" style="margin-bottom:12px">Ready to take control?</h2>
+    <p class="sp">Free forever. No credit card. Just sign up and start building your best workflow today.</p>
+    <a class="btn-cta" href="register.html">📝 Create Free Account ↗</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a class="fl" href="#home">
+    <div class="fl-icon">⚡</div>
+    <div class="fl-text">Smart<span>Task</span></div>
+  </a>
+  <div class="flinks">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+    const secs  = document.querySelectorAll('section[id]');
+    const links = document.querySelectorAll('.nav-links a');
+    let cur = '';
+    secs.forEach(s => { if(window.scrollY >= s.offsetTop - 80) cur = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if(l.getAttribute('href') === '#'+cur) l.classList.add('active');
+    });
+  });
+
+  function toggleNav(){ document.getElementById('mob').classList.toggle('open'); }
+  function closeNav() { document.getElementById('mob').classList.remove('open'); }
+
+  // Already logged in
+  (function(){
+    const raw = localStorage.getItem('smarttask_current_user');
+    if(!raw) return;
+    const u = JSON.parse(raw);
+    const t = document.createElement('div');
+    t.style.cssText=`position:fixed;bottom:24px;right:24px;z-index:9999;
+      background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;
+      padding:14px 18px;font-size:13px;color:#0f172a;
+      box-shadow:0 12px 32px rgba(59,130,246,0.12);
+      display:flex;align-items:center;gap:12px;max-width:280px;
+      animation:rise 0.4s ease;`;
+    t.innerHTML=`<span style="font-size:22px">👋</span>
+      <div>
+        <div style="font-weight:600">${u.name||u.email}</div>
+        <a href="index.html" style="color:#3b82f6;text-decoration:none;font-size:12px">Open Dashboard →</a>
+      </div>
+      <span onclick="this.parentElement.remove()" style="cursor:pointer;color:#9aaabb;font-size:16px;margin-left:4px">✕</span>`;
+    document.body.appendChild(t);
+    setTimeout(()=>t?.remove(), 5000);
+  })();
+</script>
+<script>
+/* ═══════════════════════════════════════
+   SmartTask – 3-Way Theme: light → dark → bw
+   ═══════════════════════════════════════ */
+(function () {
+  const THEMES = ['light', 'dark', 'bw'];
+  const ICONS  = { light: '🌙', dark: '⬛', bw: '☀️' };
+  const TITLES = { light: 'Switch to Dark Mode', dark: 'Switch to B&W Mode', bw: 'Switch to Light Mode' };
+
+  const saved = localStorage.getItem('smarttask_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('smarttask_theme', theme);
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.textContent = ICONS[theme];
+      btn.title = TITLES[theme];
+    });
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const idx = THEMES.indexOf(current);
+    applyTheme(THEMES[(idx + 1) % THEMES.length]);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    applyTheme(saved);
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.addEventListener('click', toggleTheme);
+    });
+  });
+
+  window.toggleTheme = toggleTheme;
+})();
+</script>
+</body>
+</html>
